@@ -1,0 +1,216 @@
+#include "ClemCore.hpp"
+
+ClemCore::ClemCore() {}
+
+void ClemCore::setNum1(long double num1) { this->num1 = num1; }
+void ClemCore::setNum2(long double num2) { this->num2 = num2; }
+void ClemCore::setResultado(long double resultado) { this->resultado = resultado; }
+void ClemCore::setNumC1(complejo numC1) { this->numC1 = numC1; }
+void ClemCore::setNumC2(complejo numC2) { this->numC2 = numC2; }
+void ClemCore::setResultadoC(complejo resultadoC) { this->resultadoC = resultadoC; }
+
+long double ClemCore::getNum1() { return this->num1; }
+long double ClemCore::getNum2() { return this->num2; }
+long double ClemCore::getResultado() { return this->resultado; }
+complejo ClemCore::getNumC1() { return this->numC1; }
+complejo ClemCore::getNumC2() { return this->numC2; }
+complejo ClemCore::getResultadoC() { return this->resultadoC; }
+
+long double ClemCore::sumaReal(long double num1, long double num2) {
+    long double resultado = num1 + num2;
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::productoReal(long double num1, long double num2) {
+    long double resultado = num1 * num2;
+    setResultado(resultado);
+    return resultado;
+}
+
+void ClemCore::verificarDivisionPorCero(long double num) {
+    if (num == 0) throw std::runtime_error("Error: No se puede dividir por cero.");
+}
+
+long double ClemCore::divisionReal(long double num1, long double num2) {
+    try {
+        verificarDivisionPorCero(num2);
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[verificación] " << e.what() << std::endl;
+        throw;
+    }
+    long double resultado = num1 / num2;
+    setResultado(resultado);
+    return resultado;
+}
+
+int ClemCore::resto(long double num1, long double num2) {
+    try {
+        verificarDivisionPorCero(num2);
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[verificación] " << e.what() << std::endl;
+        throw;
+    }
+    int resultadoE = int(num1) % int(num2);
+    setResultado(double(resultadoE));
+    return resultadoE;
+}
+
+void ClemCore::verificarPotencia(long double num, int exp) {
+    if (num == 0 && exp == 0)
+        throw std::runtime_error("Error: La operación 0^0 no está definida");
+}
+
+long double ClemCore::potenciaEntera(long double num, int exponente) {
+    try {
+        verificarPotencia(num, exponente);
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[verificación] " << e.what() << std::endl;
+        throw;
+    }
+    long double resultado;
+
+    if(exponente == 0){
+        resultado = 1;
+    } else {
+        resultado = 1;
+        for (int i = 0; i < exponente; i++)  resultado *= num;
+    }
+
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::tetracion(long double num, int exponente){
+    try {
+        verificarPotencia(num, exponente);
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[verificación] " << e.what() << std::endl;
+        throw;
+    }
+
+    long double resultado = num;
+    for (int i = 1; i < exponente; i++) resultado = potenciaEntera(resultado, num);
+
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::valorAbsoluto(long double num){
+    long double resultado;
+    if(num >= 0){
+        resultado = num;
+    } else {
+        resultado = -num;
+    }
+
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::factorial(long int num){
+    long double resultado;
+    if(num == 0){
+        resultado = 1; //Por definición 0! = 1
+    } else {
+        resultado = 1;
+        for(long int i = 1; i <= num; i++) resultado *= i;
+    }
+
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::numCombinatorio(long int num1, long int num2){
+    long double resultado;
+    resultado = factorial(num1) / (factorial(num2) * factorial(num1 - num2)); //Definición por el coeficiente binomial.
+
+    setResultado(resultado);
+    return resultado;
+}
+
+complejo ClemCore::sumaComplejo(complejo numC1, complejo numC2) {
+    complejo resultado;
+    resultado = numC1 + numC2;
+    setResultadoC(resultado);
+    return resultado;
+}
+
+complejo ClemCore::productoComplejo(complejo numC1, complejo numC2) {
+    complejo resultado;
+    resultado = numC1 * numC2;
+    setResultadoC(resultado);
+    return resultado;
+}
+
+complejo ClemCore::potenciaComplejaEnetera(complejo numC, int exponente) {
+    try {
+        if (numC.real == 0 && numC.imaginario == 0){
+            verificarPotencia(numC.real, exponente);
+        }
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[verificación] " << e.what() << std::endl;
+        throw;
+    }
+
+    complejo resultado;
+    resultado = numC;
+    if(exponente != 1){
+        for (int i = 1; i < exponente; i++)  resultado = productoComplejo(resultado, numC);
+    }
+
+    setResultadoC(resultado);
+    return resultado;
+}
+
+complejo ClemCore::conjugado(complejo numC1) {
+    complejo resultado;
+    resultado = ~ numC1;
+    setResultadoC(resultado);
+    return resultado;
+}
+
+long double ClemCore::parteReal(complejo numC){
+    long double resultado = numC.real;
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::parteImaginaria(complejo numC){
+    long double resultado = numC.imaginario;
+    setResultado(resultado);
+    return resultado;
+}
+
+long double ClemCore::denominadorC(complejo numC) {
+    return numC.real * numC.real + numC.imaginario * numC.imaginario;
+}
+
+void ClemCore::verificarDivisionPorCeroComplejo(complejo numC) {
+    // Se verifica si el cuadrado del módulo es menor que un umbral para evitar divisiones por cero
+    if (denominadorC(numC) < 1e-20) // 1e-20 es un umbral pequeño para tolerar errores numéricos de computo por coma flotante.
+        throw std::runtime_error("Error: división por cero complejo.");
+}
+
+
+complejo ClemCore::divisionCompleja(complejo numC1, complejo numC2) {
+    try {
+        verificarDivisionPorCeroComplejo(numC2);
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[verificación] " << e.what() << std::endl;
+        throw;
+    }
+
+    complejo resultado;
+    resultado = numC1 / numC2;
+    setResultadoC(resultado);
+    return resultado;
+}
+
+void ClemCore::resultadoReal(std::string operacion) {
+    std::cout << "\nEl resultado de la operación " << operacion << " es " << resultado << ".\n" << std::endl;
+}
+
+void ClemCore::resultadoComplejo(std::string operacion) {
+    std::cout << "\nEl resultado de la operación " << operacion << " es " << resultadoC.real << "+" << resultadoC.imaginario << "i.\n" << std::endl;
+}
