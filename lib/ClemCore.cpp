@@ -129,6 +129,29 @@ long double ClemCore::numCombinatorio(long int num1, long int num2){
     return resultado;
 }
 
+complejo operator+(const complejo& numC1, const complejo& numC2) {
+    return { numC1.real + numC2.real, numC1.imaginario + numC2.imaginario };
+}
+
+complejo operator-(const complejo& numC1, const complejo& numC2) {
+    return { numC1.real - numC2.real, numC1.imaginario - numC2.imaginario };
+}
+
+complejo operator*(const complejo& numC1, const complejo& numC2) {
+    return {numC1.real * numC2.real - numC1.imaginario * numC2.imaginario, numC1.real * numC2.imaginario + numC1.imaginario * numC2.real};
+}
+
+complejo operator~(const complejo& numC){
+    return {numC.real, -numC.imaginario};
+}
+
+complejo operator/(const complejo& numC1, const complejo& numC2) {
+    complejo conjugado = ~numC2;
+    complejo numerador = numC1 * conjugado;
+    long double denominador =  numC2.real * numC2.real + numC2.imaginario * numC2.imaginario;
+    return {numerador.real / denominador, numerador.imaginario / denominador};
+}
+
 complejo ClemCore::sumaComplejo(complejo numC1, complejo numC2) {
     complejo resultado;
     resultado = numC1 + numC2;
