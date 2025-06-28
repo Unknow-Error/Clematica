@@ -27,51 +27,58 @@ PAra un tensor T^(i_1, ...i_r)_(j_1,...j_r) :
 T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) *  Productorio k = 1 a s (dx^(jl)/dx^(j'l)) T^(i_1, ...i_r)_(j_1,...j_r)
 3-Tensores del mismo tipo pueden sumarse o restarse. Pueden multiplicarse tensorialmente.
 */
+
 #include <stdexcept>
 #include <type_traits>
+#include "CitraFunciones.hpp"
 
 #ifndef CITRUSTENSOR_HPP
 #define CITRUSTENSOR_HPP
 
-class CitrusTensor  {
+class CitrusTensor : public CitraFunciones {
 protected:
-    size_t indiceCovariante=0, indiceContravariante=0, rango; //valor s, valor r, valor r+s
-    size_t* forma; //Puntero de array con tamaño de dimension. Puntero de indice de los Arrays
-    size_t dimension; //¿Que n tiene en R^n?
+    size_t indiceCovariante = 0, indiceContravariante = 0, rango; //valor s, valor r, valor r+s
+    size_t* forma; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
+    // Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
+    size_t dimension; //¿Que n tiene en R^n por índice covariante/contravariante?
     long double* datos; //Puntero al tipo de datos
     size_t componentes; //Cantidad de componentes del Array multidimensional
-    size_t componentesLibres; //Cantidad de componentes
+    //size_t componentesLibres; //Cantidad de componentes
 
 public:
     // Constructor
     CitrusTensor();
-    CitrusTensor(const size_t* forma_, size_t dimensiones_, size_t covariante_, size_t contravariante_);
+    CitrusTensor(const size_t* forma_, size_t dim_, size_t contravariante_, size_t covariante_); //const => para evitar modificar el estado interno del objeto
 
     // Destructor
     ~CitrusTensor();
 
+    //Regla : Si el método no modifica ningún atributo de la clase, debe ser const.
+    // Prevenir errores o modificaciones indeseadas y Llamar al método desde otros métodos const.
     void setCovariante(size_t indCov);
     void setContravariante(size_t indContCov);
     void setDimension(size_t dim);
-    size_t getIndCovariante();
-    size_t getIndContravariante();
-    size_t getRango();
-    size_t getDimenesion();
-    size_t getComponentes();
-    long double* getDatos();
+    size_t getIndCovariante() const;
+    size_t getIndContravariante() const;
+    size_t getRango() const;
+    size_t getDimension() const;
+    size_t getComponentes() const;
+    const size_t* getForma() const; //Se le agregar const al puntero => Evitar que el llamador pueda modificar los datos apuntados por los punteros
+    const long double* getDatos() const;
 
     // Acceso por índices múltiples (estilo matemático)
+    /*
     template<typename... Indices>
     double& operator[](Indices... indices);
 
     template<typename... Indices>
     const double& operator[](Indices... indices) const;
-
-private:
+    */
     // Conversión de índice multidimensional a lineal
+    void verificarIndices(const size_t* indices) const;
     size_t getIndiceLineal(const size_t* indices) const;
-
-}
+    size_t potenciaBaseEntera(size_t base, size_t exponente) const; //Pseudo-Sobrecarga para poder usarla como const.
+};
 
 // Sobrecarga a los operadores []
 template<typename... Indices>
