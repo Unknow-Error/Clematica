@@ -1,7 +1,7 @@
 #include <iostream>
-#include "../lib/ClemCore.cpp"
-#include "../lib/CitraFunciones.cpp"
-#include "../lib/CitrusTensor.cpp"
+#include "../lib/ClematicaCore/ClemCore.cpp"
+#include "../lib/ClematicaCore/CitraFunciones.cpp"
+#include "../lib/CitrusTensorial/CitrusTensor.cpp"
 #include <iomanip> // necesario para setprecision y fixed
 
 int main(int argc, char *argv[])

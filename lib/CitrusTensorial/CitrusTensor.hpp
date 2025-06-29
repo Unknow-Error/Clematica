@@ -30,7 +30,7 @@ T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) 
 
 #include <stdexcept>
 #include <type_traits>
-#include "ClemCore.hpp"
+#include "../ClematicaCore/ClemCore.hpp"
 
 #ifndef CITRUSTENSOR_HPP
 #define CITRUSTENSOR_HPP
