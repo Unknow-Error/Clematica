@@ -82,6 +82,9 @@ public:
     template<typename... Indices>
     const tensorDatos& operator()(Indices... indices) const;
 
-    // Operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 
+    
 };
+
+// Definir operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 
+
 #endif
