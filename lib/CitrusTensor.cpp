@@ -244,33 +244,3 @@ const tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) con
 
 template class CitrusTensor<long double>;
 template class CitrusTensor<complejo>;
-
-// Sobrecarga a los operadores () -> Usarlo para notacion, modificación y recuerar elementos con indices directo (encapsular lo de getIndiceLineal o getDato(indices))
-template<typename tensorDatos>
-template<typename... Indices>
-tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) {
-    static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
-    static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
-
-    if (sizeof...(indices) != this->rango) throw std::invalid_argument("Número de índices incorrecto.");
-    
-    size_t indice_array[] = { static_cast<size_t>(indices)... };
-    size_t indiceLineal = this->getIndiceLineal(indice_array);
-    return this->datos[indiceLineal];    
-}
-
-template<typename tensorDatos>
-template<typename... Indices>
-const tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) const {
-    static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
-    static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
-    if (sizeof...(indices) != this->rango) throw std::invalid_argument("Número de índices incorrecto.");
-
-    ssize_t indice_array[] = { static_cast<size_t>(indices)... };
-    size_t indiceLineal = this->getIndiceLineal(indice_array);
-
-    return this->datos[indiceLineal];
-}
-
-template class CitrusTensor<long double>;
-template class CitrusTensor<complejo>;
