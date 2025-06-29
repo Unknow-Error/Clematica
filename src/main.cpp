@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
     complejo c2 = {1.0, -2.0};
     complejo c3 = {0, pi};
     complejo c4 = {calculadora.factorial(5),pi};
-    calculadora.setNumC1(c1);
-    calculadora.setNumC2(c2);
 
     std::cout << std::fixed << std::setprecision(3);
 
