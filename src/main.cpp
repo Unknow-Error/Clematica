@@ -85,13 +85,18 @@ int main(int argc, char *argv[])
     calculadora.exponencialComplejo(c2, 1000, 1e-10);
     calculadora.resultadoComplejo("exponencial de base e");
 
-    size_t forma[3] = {4, 4, 4};
-    size_t indices[3] = {4, 3, 3};
+    size_t forma[2] = {3, 3};
+    size_t indices[2] = {2, 3};
     size_t indice = 0;
 
-    CitrusTensor matriz(forma, 4, 1, 2);  
-    indice = matriz.getIndiceLineal(indices);
+    CitrusTensor<complejo> tr(forma, 1, 1); 
+    complejo buffer[9] = {c1, c2, c3, c4, c2, c1+c2, c3, c2, c3};
+    tr.setDatos(buffer);
+    indice = tr.getIndiceLineal(indices);
 
-    std::cout << "El índice para el elemento matriz(3,2) es " << indice << std::endl;
+    std::cout << "El índice para el elemento tensor(2,3) es " << indice << ".\n" << std::endl;
+    std::cout << "El dato en tensor(2,3) es " << (tr.getDato(indices)).real << " + " <<  (tr.getDato(indices)).imaginario <<  "i.\n" << std::endl;
+    tr(1,1) = {5,6};
+    std::cout << "El dato en tensor(1,1) es " << (tr(1,1)).real <<  " + " <<  (tr(1,1)).imaginario << "i.\n" << std::endl;
     return 0;
 }
