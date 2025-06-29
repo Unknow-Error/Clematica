@@ -2,18 +2,10 @@
 
 ClemCore::ClemCore() {}
 
-void ClemCore::setNum1(long double num1) { this->num1 = num1; }
-void ClemCore::setNum2(long double num2) { this->num2 = num2; }
 void ClemCore::setResultado(long double resultado) { this->resultado = resultado; }
-void ClemCore::setNumC1(complejo numC1) { this->numC1 = numC1; }
-void ClemCore::setNumC2(complejo numC2) { this->numC2 = numC2; }
 void ClemCore::setResultadoC(complejo resultadoC) { this->resultadoC = resultadoC; }
 
-long double ClemCore::getNum1() { return this->num1; }
-long double ClemCore::getNum2() { return this->num2; }
 long double ClemCore::getResultado() { return this->resultado; }
-complejo ClemCore::getNumC1() { return this->numC1; }
-complejo ClemCore::getNumC2() { return this->numC2; }
 complejo ClemCore::getResultadoC() { return this->resultadoC; }
 
 long double ClemCore::sumaReal(long double num1, long double num2) {

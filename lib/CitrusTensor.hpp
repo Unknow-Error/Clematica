@@ -75,11 +75,13 @@ public:
     tensorDatos getDato(const size_t* indices) const;
     const tensorDatos* getDatos() const;
 
-    // Acceso y modificación por índices múltiples (estilo matemático)
+    // Acceso y modificación por índices múltiples (estilo matemático) => Similar a MATLAB.
     template<typename... Indices>
     tensorDatos& operator()(Indices... indices);
 
     template<typename... Indices>
     const tensorDatos& operator()(Indices... indices) const;
+
+    // Operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 
 };
 #endif

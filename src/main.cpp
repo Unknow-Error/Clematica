@@ -10,18 +10,6 @@ int main(int argc, char *argv[])
 
     //Operaciones con numeros reales
 
-    calculadora.setNum1(10.75);
-    calculadora.setNum2(2.77);
-
-    calculadora.sumaReal(calculadora.getNum1(), calculadora.getNum2());
-    calculadora.resultadoReal("suma");
-
-    calculadora.divisionReal(calculadora.getNum1(), calculadora.getNum2());
-    calculadora.resultadoReal("división");
-
-    calculadora.potenciaEntera(calculadora.getNum2(),3);
-    calculadora.resultadoReal("potencia");
-
     calculadora.tetracion(3,3);
     calculadora.resultadoReal("tetracion");
 

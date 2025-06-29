@@ -20,17 +20,13 @@ struct complejo {
 
 class ClemCore {
 protected:
-    long double num1, num2, resultado;
-    complejo numC1, numC2, resultadoC;
+    long double resultado;
+    complejo resultadoC;
 
 public:
     ClemCore();
 
-    void setNum1(long double num1);
-    void setNum2(long double num2);
     void setResultado(long double resultado);
-    void setNumC1(complejo numC1);
-    void setNumC2(complejo numC2);
     void setResultadoC(complejo resultadoC);
 
     long double getNum1();
