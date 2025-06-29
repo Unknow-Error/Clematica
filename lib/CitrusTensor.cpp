@@ -215,7 +215,7 @@ size_t CitrusTensor<tensorDatos>::getIndiceLineal(const size_t* indices) const {
     return indiceLineal;
 }
 
-// Sobrecarga a los operadores [] -> Usarlo para notacion y recuerar elementos con indices directo (encapsular lo de getIndiceLineal o getDato(indices))
+// Sobrecarga a los operadores () -> Usarlo para notacion, modificación y recuerar elementos con indices directo (encapsular lo de getIndiceLineal o getDato(indices))
 template<typename tensorDatos>
 template<typename... Indices>
 tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) {
