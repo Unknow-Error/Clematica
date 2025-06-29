@@ -35,27 +35,28 @@ T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) 
 #ifndef CITRUSTENSOR_HPP
 #define CITRUSTENSOR_HPP
 
+template<typename tensorDatos> //Para sobrecargar el puntero y poder cambiar el tipo de datos.
+
 class CitrusTensor : public ClemCore {
 protected:
-    size_t indiceCovariante = 0, indiceContravariante = 0, rango; //valor s, valor r, valor r+s
+    size_t indiceCovariante = 0, indiceContravariante = 0, rango = 0, componentes = 0; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
     size_t* forma, *dimContravariante, *dimCovariante; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
     // Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
     //En el caso de que los índices contravariantes o covariantes tengan diferente dimensiones (multidimensionalidad). Se especifican con arrays similares a forma
-    long double* datos; //Puntero al tipo de datos
-    size_t componentes; //Cantidad de componentes del Array multidimensional
+    tensorDatos* datos; //Puntero al tipo de datos
     //size_t componentesLibres; //Cantidad de componentes
 
 public:
     // Constructor
     CitrusTensor();
     CitrusTensor(const size_t* forma_, size_t contravariante_, size_t covariante_); //const => para evitar modificar el estado interno del objeto
+
     // Destructor
     ~CitrusTensor();
 
     //Regla : Si el método no modifica ningún atributo de la clase, debe ser const.
     // Prevenir errores o modificaciones indeseadas y Llamar al método desde otros métodos const.
-    void setCovariante(size_t indCov);
-    void setContravariante(size_t indContCov);
+    
     size_t getIndCovariante() const;
     size_t getIndContravariante() const;
     size_t getRango() const;
@@ -63,10 +64,14 @@ public:
     const size_t* getDimCov() const;
     size_t getComponentes() const;
     const size_t* getForma() const; //Se le agregar const al puntero => Evitar que el llamador pueda modificar los datos apuntados por los punteros
-    const long double* getDatos() const;
 
     void verificarIndices(const size_t* indices) const;
     size_t getIndiceLineal(const size_t* indices) const;
+
+    void setTensor(const size_t* forma, size_t nuevaContravariante, size_t nuevaCovariante);
+    void setDatos(const tensorDatos* arregloDatos);
+    tensorDatos getDato(const size_t* indices) const;
+    const tensorDatos* getDatos() const;
 
     // Acceso por índices múltiples (estilo matemático)
     /*
@@ -99,3 +104,4 @@ const double& CitrusTensor::operator[](Indices... indices) const {
 }
 */
 #endif
+
