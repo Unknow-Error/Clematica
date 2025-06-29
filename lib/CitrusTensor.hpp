@@ -66,6 +66,10 @@ public:
     const size_t* getForma() const; //Se le agregar const al puntero => Evitar que el llamador pueda modificar los datos apuntados por los punteros
     const long double* getDatos() const;
 
+    void verificarIndices(const size_t* indices) const;
+    size_t getIndiceLineal(const size_t* indices) const;
+    size_t potenciaBaseEntera(size_t base, size_t exponente) const; //Pseudo-Sobrecarga para poder usarla como const.
+
     // Acceso por índices múltiples (estilo matemático)
     /*
     template<typename... Indices>
@@ -75,11 +79,8 @@ public:
     const double& operator[](Indices... indices) const;
     */
     // Conversión de índice multidimensional a lineal
-    void verificarIndices(const size_t* indices) const;
-    size_t getIndiceLineal(const size_t* indices) const;
-    size_t potenciaBaseEntera(size_t base, size_t exponente) const; //Pseudo-Sobrecarga para poder usarla como const.
 };
-
+/*
 // Sobrecarga a los operadores []
 template<typename... Indices>
 double& CitrusTensor::operator[](Indices... indices) {
@@ -98,4 +99,5 @@ const double& CitrusTensor::operator[](Indices... indices) const {
     size_t indice_array[] = { static_cast<size_t>(indices)... };
     return data[getIndiceLineal(indice_array)];
 }
+*/
 #endif

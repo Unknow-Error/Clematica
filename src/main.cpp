@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../lib/ClemCore.cpp"
 #include "../lib/CitraFunciones.cpp"
+#include "../lib/CitrusTensor.cpp"
 #include <iomanip> // necesario para setprecision y fixed
 
 int main(int argc, char *argv[])
@@ -83,5 +84,14 @@ int main(int argc, char *argv[])
     calculadora.resultadoComplejo("exponencial de base e");
     calculadora.exponencialComplejo(c2, 1000, 1e-10);
     calculadora.resultadoComplejo("exponencial de base e");
+
+    size_t forma[3] = {4, 4, 4};
+    size_t indices[3] = {4, 3, 3};
+    size_t indice = 0;
+
+    CitrusTensor matriz(forma, 4, 1, 2);  
+    indice = matriz.getIndiceLineal(indices);
+
+    std::cout << "El índice para el elemento matriz(3,2) es " << indice << std::endl;
     return 0;
 }
