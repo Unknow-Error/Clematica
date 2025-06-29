@@ -40,7 +40,7 @@ template<typename tensorDatos> //Para sobrecargar el puntero y poder cambiar el 
 class CitrusTensor : public ClemCore {
 protected:
     size_t indiceCovariante = 0, indiceContravariante = 0, rango = 0, componentes = 0; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
-    size_t* forma, *dimContravariante, *dimCovariante; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
+    size_t *forma, *dimContravariante, *dimCovariante; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
     // Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
     //En el caso de que los índices contravariantes o covariantes tengan diferente dimensiones (multidimensionalidad). Se especifican con arrays similares a forma
     tensorDatos* datos; //Puntero al tipo de datos
@@ -65,43 +65,21 @@ public:
     size_t getComponentes() const;
     const size_t* getForma() const; //Se le agregar const al puntero => Evitar que el llamador pueda modificar los datos apuntados por los punteros
 
+    // Conversión de índice multidimensional a lineal
     void verificarIndices(const size_t* indices) const;
     size_t getIndiceLineal(const size_t* indices) const;
 
+    // Modificar instancia actual de tensor y los datos.
     void setTensor(const size_t* forma, size_t nuevaContravariante, size_t nuevaCovariante);
     void setDatos(const tensorDatos* arregloDatos);
     tensorDatos getDato(const size_t* indices) const;
     const tensorDatos* getDatos() const;
 
-    // Acceso por índices múltiples (estilo matemático)
-    /*
+    // Acceso y modificación por índices múltiples (estilo matemático)
     template<typename... Indices>
-    double& operator[](Indices... indices);
+    tensorDatos& operator()(Indices... indices);
 
     template<typename... Indices>
-    const double& operator[](Indices... indices) const;
-    */
-    // Conversión de índice multidimensional a lineal
+    const tensorDatos& operator()(Indices... indices) const;
 };
-/*
-// Sobrecarga a los operadores []
-template<typename... Indices>
-double& CitrusTensor::operator[](Indices... indices) {
-    static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
-    static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
-    if (sizeof...(indices) != dimensiones) throw std::invalid_argument("Número de índices incorrecto.");
-    size_t indice_array[] = { static_cast<size_t>(indices)... };
-    return data[getIndiceLineal(indice_array)];
-}
-
-template<typename... Indices>
-const double& CitrusTensor::operator[](Indices... indices) const {
-    static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
-    static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
-    if (sizeof...(indices) != dimensiones) throw std::invalid_argument("Número de índices incorrecto.");
-    size_t indice_array[] = { static_cast<size_t>(indices)... };
-    return data[getIndiceLineal(indice_array)];
-}
-*/
 #endif
-
