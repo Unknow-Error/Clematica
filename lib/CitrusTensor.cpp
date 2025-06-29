@@ -128,10 +128,17 @@ void CitrusTensor<tensorDatos>::setTensor(const size_t* formaNueva, size_t nueva
 
 template<typename tensorDatos>
 void CitrusTensor<tensorDatos>::setDatos(const tensorDatos* arregloDatos){
-    if (this->datos != nullptr){
-        delete[] this->datos;
+    if (!arregloDatos) {
+        throw std::invalid_argument("setDatos: arregloDatos no puede ser null.");
     }
-    this->datos = arregloDatos;
+    // Libero búfer viejo
+    delete[] this->datos;
+    // Creo un nuevo búfer del tamaño “componentes”
+    this->datos = new tensorDatos[this->componentes];
+    // Copio elemento a elemento
+    for (size_t i = 0; i < this->componentes; ++i) {
+        this->datos[i] = arregloDatos[i];
+    }
 }
 
 template<typename tensorDatos>
@@ -208,5 +215,32 @@ size_t CitrusTensor<tensorDatos>::getIndiceLineal(const size_t* indices) const {
     return indiceLineal;
 }
 
-template class CitrusTensor<const long double>;
-template class CitrusTensor<const complejo>;
+// Sobrecarga a los operadores [] -> Usarlo para notacion y recuerar elementos con indices directo (encapsular lo de getIndiceLineal o getDato(indices))
+template<typename tensorDatos>
+template<typename... Indices>
+tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) {
+    static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
+    static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
+
+    if (sizeof...(indices) != this->rango) throw std::invalid_argument("Número de índices incorrecto.");
+    
+    size_t indice_array[] = { static_cast<size_t>(indices)... };
+    size_t indiceLineal = this->getIndiceLineal(indice_array);
+    return this->datos[indiceLineal];    
+}
+
+template<typename tensorDatos>
+template<typename... Indices>
+const tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) const {
+    static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
+    static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
+    if (sizeof...(indices) != this->rango) throw std::invalid_argument("Número de índices incorrecto.");
+
+    ssize_t indice_array[] = { static_cast<size_t>(indices)... };
+    size_t indiceLineal = this->getIndiceLineal(indice_array);
+
+    return this->datos[indiceLineal];
+}
+
+template class CitrusTensor<long double>;
+template class CitrusTensor<complejo>;
