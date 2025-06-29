@@ -17,8 +17,17 @@ CitrusTensor::CitrusTensor(const size_t* forma_, size_t contravariante_, size_t 
 
     // Reserva de arrays
     this->forma             = new size_t[this->rango];
-    this->dimContravariante = new size_t[this->indiceContravariante];
-    this->dimCovariante     = new size_t[this->indiceCovariante];
+
+    // Sólo allocate si es necesario => Tensores puramente covariantes o puramente contravariantes.
+    if (this->indiceContravariante > 0)
+        this->dimContravariante = new size_t[this->indiceContravariante];
+    else
+        this->dimContravariante = nullptr;
+
+    if (this->indiceCovariante > 0)
+        this->dimCovariante = new size_t[this->indiceCovariante];
+    else
+        this->dimCovariante = nullptr;
 
     this->componentes = 1;
 
