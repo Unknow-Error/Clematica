@@ -35,17 +35,22 @@ T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) 
 #ifndef CITRUSTENSOR_HPP
 #define CITRUSTENSOR_HPP
 
+
+
+
+// Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
+//En el caso de que los índices contravariantes o covariantes tengan diferente dimensiones (multidimensionalidad). Se especifican con arrays similares a forma
 template<typename tensorDatos> //Para sobrecargar el puntero y poder cambiar el tipo de datos.
-
-class CitrusTensor : public ClemCore {
-protected:
-    size_t indiceCovariante = 0, indiceContravariante = 0, rango = 0, componentes = 0; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
+struct Tensor {
+    size_t indiceContravariante, indiceCovariante, rango, componentes; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
     size_t *forma, *dimContravariante, *dimCovariante; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
-    // Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
-    //En el caso de que los índices contravariantes o covariantes tengan diferente dimensiones (multidimensionalidad). Se especifican con arrays similares a forma
-    tensorDatos* datos; //Puntero al tipo de datos
-    //size_t componentesLibres; //Cantidad de componentes
+    tensorDatos *datos; //Puntero al tipo de datos
+};
 
+template<typename tensorDatos> 
+class CitrusTensor{
+protected:
+    Tensor<tensorDatos> tensor;
 public:
     // Constructor
     CitrusTensor();
@@ -74,6 +79,7 @@ public:
     void setDatos(const tensorDatos* arregloDatos);
     tensorDatos getDato(const size_t* indices) const;
     const tensorDatos* getDatos() const;
+    Tensor<tensorDatos> getTensor();
 
     // Acceso y modificación por índices múltiples (estilo matemático) => Similar a MATLAB.
     template<typename... Indices>
@@ -81,8 +87,6 @@ public:
 
     template<typename... Indices>
     const tensorDatos& operator()(Indices... indices) const;
-
-    
 };
 
 // Definir operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 

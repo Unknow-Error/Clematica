@@ -4,79 +4,79 @@ template<typename tensorDatos>
 CitrusTensor<tensorDatos>::CitrusTensor(){}
 
 template<typename tensorDatos>
-CitrusTensor<tensorDatos>::CitrusTensor(const size_t* forma_, size_t contravariante_, size_t covariante_)
-    : indiceCovariante(covariante_), indiceContravariante(contravariante_) {
+CitrusTensor<tensorDatos>::CitrusTensor(const size_t* forma_, size_t contravariante_, size_t covariante_) {
 
-    this->rango = this->indiceCovariante + this->indiceContravariante;
+    this->tensor.indiceContravariante = contravariante_;
+    this->tensor.indiceCovariante = covariante_;
+    this->tensor.rango = this->tensor.indiceCovariante + this->tensor.indiceContravariante;
 
     if (forma_ == nullptr) {
         throw std::invalid_argument("[ERROR] El puntero 'forma_' no puede ser null.");
     }
 
-    if (rango == 0) {
+    if (this->tensor.rango == 0) {
         throw std::invalid_argument("[ERROR] El tensor debe tener al menos un índice (contravariante o covariante).");
     }
 
     // Reserva de arrays
-    this->forma             = new size_t[this->rango];
+    this->tensor.forma = new size_t[this->tensor.rango];
 
-    // Sólo allocate si es necesario => Tensores puramente covariantes o puramente contravariantes.
-    if (this->indiceContravariante > 0)
-        this->dimContravariante = new size_t[this->indiceContravariante];
+    if (this->tensor.indiceContravariante > 0)
+        this->tensor.dimContravariante = new size_t[this->tensor.indiceContravariante];
     else
-        this->dimContravariante = nullptr;
+        this->tensor.dimContravariante = nullptr;
 
-    if (this->indiceCovariante > 0)
-        this->dimCovariante = new size_t[this->indiceCovariante];
+    if (this->tensor.indiceCovariante > 0)
+        this->tensor.dimCovariante = new size_t[this->tensor.indiceCovariante];
     else
-        this->dimCovariante = nullptr;
+        this->tensor.dimCovariante = nullptr;
 
-    this->componentes = 1;
+    this->tensor.componentes = 1;
 
-    for (size_t i = 0; i < this->rango; i++) {
+    for (size_t i = 0; i < this->tensor.rango; i++) {
         if (forma_[i] == 0) {
             throw std::invalid_argument("[ERROR] Cada dimensión en 'forma' debe ser mayor a cero.");
         }
-        this->forma[i] = forma_[i];
-        this->componentes *= this->forma[i];
+        this->tensor.forma[i] = forma_[i];
+        this->tensor.componentes *= this->tensor.forma[i];
     }
 
-    for (size_t i = 0; i < this->indiceContravariante; i++) {
-        this->dimContravariante[i] = forma_[i];
-    }
-    
-    for (size_t i = 0; i < this->indiceCovariante; i++) {
-        this->dimCovariante[i] = forma_[ this->indiceContravariante + i ];
+    for (size_t i = 0; i < this->tensor.indiceContravariante; i++) {
+        this->tensor.dimContravariante[i] = forma_[i];
     }
 
-    this->datos = nullptr;
+    for (size_t i = 0; i < this->tensor.indiceCovariante; i++) {
+        this->tensor.dimCovariante[i] = forma_[this->tensor.indiceContravariante + i];
+    }
+
+    this->tensor.datos = nullptr;
 }
 
 template<typename tensorDatos>
 CitrusTensor<tensorDatos>::~CitrusTensor() {
-    delete[] this->datos;
-    delete[] this->forma;
-    delete[] this->dimContravariante;
-    delete[] this->dimCovariante;
-    this->componentes = 0;
-    this->indiceContravariante = 0;
-    this->indiceCovariante = 0;
+    delete[] this->tensor.datos;
+    delete[] this->tensor.forma;
+    delete[] this->tensor.dimContravariante;
+    delete[] this->tensor.dimCovariante;
+    this->tensor.componentes = 0;
+    this->tensor.indiceContravariante = 0;
+    this->tensor.indiceCovariante = 0;
 }
 
 template<typename tensorDatos>
-size_t CitrusTensor<tensorDatos>::getIndCovariante() const { return this->indiceCovariante; }
+size_t CitrusTensor<tensorDatos>::getIndCovariante() const { return this->tensor.indiceCovariante; }
 template<typename tensorDatos>
-size_t CitrusTensor<tensorDatos>::getIndContravariante() const { return this->indiceContravariante; }
+size_t CitrusTensor<tensorDatos>::getIndContravariante() const { return this->tensor.indiceContravariante; }
 template<typename tensorDatos>
-size_t CitrusTensor<tensorDatos>::getRango() const { return this->rango; }
+size_t CitrusTensor<tensorDatos>::getRango() const { return this->tensor.rango; }
 template<typename tensorDatos>
-size_t CitrusTensor<tensorDatos>::getComponentes() const { return this->componentes; }
+size_t CitrusTensor<tensorDatos>::getComponentes() const { return this->tensor.componentes; }
 template<typename tensorDatos>
-const size_t* CitrusTensor<tensorDatos>::getForma() const { return this->forma; }
+const size_t* CitrusTensor<tensorDatos>::getForma() const { return this->tensor.forma; }
 template<typename tensorDatos>
-const size_t* CitrusTensor<tensorDatos>::getDimContrav() const { return this->dimContravariante; }
+const size_t* CitrusTensor<tensorDatos>::getDimContrav() const { return this->tensor.dimContravariante; }
 template<typename tensorDatos>
-const size_t* CitrusTensor<tensorDatos>::getDimCov() const { return this->dimCovariante; }
+const size_t* CitrusTensor<tensorDatos>::getDimCov() const { return this->tensor.dimCovariante; }
 
 template<typename tensorDatos>
 void CitrusTensor<tensorDatos>::setTensor(const size_t* formaNueva, size_t nuevaContravariante, size_t nuevaCovariante) {
@@ -99,31 +99,31 @@ void CitrusTensor<tensorDatos>::setTensor(const size_t* formaNueva, size_t nueva
     // CCopiar la nueva forma
     size_t nuevosComponentes = 1;
     for (size_t i = 0; i < nuevoRango; ++i) {
-        nuevaForma[i] = forma[i];
+        nuevaForma[i] = formaNueva[i];
         nuevosComponentes *= nuevaForma[i];
     }
     for (size_t i = 0; i < nuevaContravariante; ++i) {
-        nuevoDimContra[i] = forma[i];
+        nuevoDimContra[i] = nuevaForma[i];
     }
     for (size_t i = 0; i < nuevaCovariante; ++i) {
-        nuevoDimCo[i] = forma[nuevaContravariante + i];
+        nuevoDimCo[i] = nuevaForma[nuevaContravariante + i];
     }
 
     // 2) Liberar valores viejos
-    delete[] this->forma;
-    delete[] this->dimContravariante;
-    delete[] this->dimCovariante;
-    delete[] this->datos;
+    delete[] this->tensor.forma;
+    delete[] this->tensor.dimContravariante;
+    delete[] this->tensor.dimCovariante;
+    delete[] this->tensor.datos;
 
     // 3) Reasignar
-    this->indiceContravariante = nuevaContravariante;
-    this->indiceCovariante    = nuevaCovariante;
-    this->rango               = nuevoRango;
-    this->componentes         = nuevosComponentes;
-    this->forma               = nuevaForma;
-    this->dimContravariante   = nuevoDimContra;
-    this->dimCovariante       = nuevoDimCo;
-    this->datos               = nullptr;
+    this->tensor.indiceContravariante = nuevaContravariante;
+    this->tensor.indiceCovariante    = nuevaCovariante;
+    this->tensor.rango               = nuevoRango;
+    this->tensor.componentes         = nuevosComponentes;
+    this->tensor.forma               = nuevaForma;
+    this->tensor.dimContravariante   = nuevoDimContra;
+    this->tensor.dimCovariante       = nuevoDimCo;
+    this->tensor.datos               = nullptr;
 }
 
 template<typename tensorDatos>
@@ -132,30 +132,33 @@ void CitrusTensor<tensorDatos>::setDatos(const tensorDatos* arregloDatos){
         throw std::invalid_argument("setDatos: arregloDatos no puede ser null.");
     }
     // Libero búfer viejo
-    delete[] this->datos;
+    delete[] this->tensor.datos;
     // Creo un nuevo búfer del tamaño “componentes”
-    this->datos = new tensorDatos[this->componentes];
+    this->tensor.datos = new tensorDatos[this->tensor.componentes];
     // Copio elemento a elemento
-    for (size_t i = 0; i < this->componentes; ++i) {
-        this->datos[i] = arregloDatos[i];
+    for (size_t i = 0; i < this->tensor.componentes; ++i) {
+        this->tensor.datos[i] = arregloDatos[i];
     }
 }
 
 template<typename tensorDatos>
 tensorDatos CitrusTensor<tensorDatos>::getDato(const size_t* indices) const {
-    return datos[getIndiceLineal(indices)];
+    return this->tensor.datos[getIndiceLineal(indices)];
 }
 
 template<typename tensorDatos>
 const tensorDatos* CitrusTensor<tensorDatos>::getDatos() const {
-    return this->datos;
+    return this->tensor.datos;
 }
+
+template<typename tensorDatos>
+Tensor<tensorDatos> CitrusTensor<tensorDatos>::getTensor() { return this->tensor;}
 
 // Cálculo del índice lineal
 template<typename tensorDatos>
 void CitrusTensor<tensorDatos>::verificarIndices(const size_t* indices) const{
-    for (size_t i = 0; i < rango; ++i) {
-        if ((indices[i]-1) >= this->forma[i]) {
+    for (size_t i = 0; i < this->tensor.rango; ++i) {
+        if ((indices[i]-1) >= this->tensor.forma[i]) {
             throw std::out_of_range("Índice fuera de rango.");
         }
     }
@@ -172,8 +175,8 @@ size_t CitrusTensor<tensorDatos>::getIndiceLineal(const size_t* indices) const {
 
     size_t indiceLineal = 0;
 
-    size_t r = this->indiceContravariante;
-    size_t s = this->indiceCovariante;
+    size_t r = this->tensor.indiceContravariante;
+    size_t s = this->tensor.indiceCovariante;
 
     try{
         verificarIndices(indices);
@@ -188,12 +191,12 @@ size_t CitrusTensor<tensorDatos>::getIndiceLineal(const size_t* indices) const {
         // Producto de dimensiones contravariantes posteriores: dimContra[i+1..r-1]
         size_t prodDimContrav = 1;
         for (size_t m = i + 1; m < r; ++m) {
-            prodDimContrav *= this->dimContravariante[m];
+            prodDimContrav *= this->tensor.dimContravariante[m];
         }
         // Producto de todas las dimensiones covariantes dimCo[0..s-1]
         size_t prodDimCovAll = 1;
         for (size_t n = 0; n < s; ++n) {
-            prodDimCovAll *= this->dimCovariante[n];
+            prodDimCovAll *= this->tensor.dimCovariante[n];
         }
         // (indices[i]-1) porque el usuario pasa 1..d, y aquí trabajamos 0..d-1
         aporteContrav += (indices[i] - 1) * prodDimContrav * prodDimCovAll;
@@ -205,7 +208,7 @@ size_t CitrusTensor<tensorDatos>::getIndiceLineal(const size_t* indices) const {
         // Producto de dimensiones covariantes posteriores: dimCo[j+1..s-1]
         size_t prodDimCov = 1;
         for (size_t n = j + 1; n < s; ++n) {
-            prodDimCov *= this->dimCovariante[n];
+            prodDimCov *= this->tensor.dimCovariante[n];
         }
         aporteCov += (indices[r + j] - 1) * prodDimCov;
     }
@@ -222,11 +225,11 @@ tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) {
     static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
     static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
 
-    if (sizeof...(indices) != this->rango) throw std::invalid_argument("Número de índices incorrecto.");
+    if (sizeof...(indices) != this->tensor.rango) throw std::invalid_argument("Número de índices incorrecto.");
     
     size_t indice_array[] = { static_cast<size_t>(indices)... };
     size_t indiceLineal = this->getIndiceLineal(indice_array);
-    return this->datos[indiceLineal];    
+    return this->tensor.datos[indiceLineal];    
 }
 
 template<typename tensorDatos>
@@ -234,12 +237,12 @@ template<typename... Indices>
 const tensorDatos& CitrusTensor<tensorDatos>::operator()(Indices... indices) const {
     static_assert(sizeof...(indices) > 0, "Debe haber al menos un índice.");
     static_assert((std::is_convertible_v<Indices, size_t> && ...), "Todos los índices deben ser size_t o convertibles.");
-    if (sizeof...(indices) != this->rango) throw std::invalid_argument("Número de índices incorrecto.");
+    if (sizeof...(indices) != this->tensor.rango) throw std::invalid_argument("Número de índices incorrecto.");
 
-    ssize_t indice_array[] = { static_cast<size_t>(indices)... };
+    size_t indice_array[] = { static_cast<size_t>(indices)... };
     size_t indiceLineal = this->getIndiceLineal(indice_array);
 
-    return this->datos[indiceLineal];
+    return this->tensor.datos[indiceLineal];
 }
 
 template class CitrusTensor<long double>;
