@@ -43,7 +43,7 @@ struct Tensor {
     numTipo *datos = nullptr; //Puntero al tipo de datos
 
     // Aplicar RAII (Resource Acquisition Is Initialization) : 
-    // Para que se libere automáticamente la memoria cuando un Tensor<numTipo> deja de estar en uso — y evitar así fugas de memoria
+    // Para que se libere automáticamente la memoria cuando un Tensor<numTipo> deja de estar en uso — y evitar así fugas de memoria.
 
     // Constructor por defecto (Crear un tensor vacío)
     Tensor() noexcept = default;
