@@ -25,7 +25,8 @@ Propiedades:
 2-Regla transformación tensorial : Bajo un cambio de coordenadas, las componentes se transforman de la sguiente forma:
 PAra un tensor T^(i_1, ...i_r)_(j_1,...j_r) :
 T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) *  Productorio k = 1 a s (dx^(jl)/dx^(j'l)) T^(i_1, ...i_r)_(j_1,...j_r)
-3-Tensores del mismo tipo pueden sumarse o restarse. Pueden multiplicarse tensorialmente.
+3- Tensores del mismo tipo pueden sumarse o restarse. Sus componentes pueden multiplicarse/dividirse bis a bis.
+4- Pueden multiplicarse tensorialmente (operador bilineal) generando un tensor cuyo tipo es la suma de los tipos de los tensores multiplicados.
 */
 
 #include <stdexcept>
@@ -35,22 +36,95 @@ T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) 
 #ifndef CITRUSTENSOR_HPP
 #define CITRUSTENSOR_HPP
 
-template<typename tensorDatos> //Para sobrecargar el puntero y poder cambiar el tipo de datos.
+template<typename numTipo> //Para sobrecargar el puntero y poder cambiar el tipo de datos.
 struct Tensor {
     size_t indiceContravariante = 0, indiceCovariante = 0, rango = 0, componentes = 0; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
     size_t *forma = nullptr, *dimContravariante = nullptr, *dimCovariante = nullptr; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
-    tensorDatos *datos = nullptr; //Puntero al tipo de datos
+    numTipo *datos = nullptr; //Puntero al tipo de datos
 
-    friend Tensor<tensorDatos> copiarTensorForma(const Tensor<tensorDatos>& tensor);
-    friend Tensor<tensorDatos> copiarTensor(const Tensor<tensorDatos>& tensor);
-    //friend Tensor operator*<tensorDatos>(const Tensor& tensor1, const Tensor& tensor2); //Esto sería un producto tensorial : Un operador bilineal dando lugar a un nuevo tensor de diferente dimension y covariantes/contravariantes.
-    friend void liberarTensor(Tensor<tensorDatos>& tensor);
+    // Aplicar RAII (Resource Acquisition Is Initialization) : 
+    // Para que se libere automáticamente la memoria cuando un Tensor<numTipo> deja de estar en uso — y evitar así fugas de memoria
+
+    // Constructor por defecto (Crear un tensor vacío)
+    Tensor() noexcept = default;
+
+    // Destructor
+    ~Tensor() {
+        delete[] forma;
+        delete[] dimContravariante;
+        delete[] dimCovariante;
+        delete[] datos;
+    }
+
+    // Constructor por copia
+    Tensor(const Tensor& otroTensor)
+        : indiceContravariante(otroTensor.indiceContravariante),
+          indiceCovariante(otroTensor.indiceCovariante),
+          rango(otroTensor.rango),
+          componentes(otroTensor.componentes)
+     {
+        forma = new size_t[rango];
+        for (size_t i = 0; i < rango; ++i) forma[i] = otroTensor.forma[i];
+
+        dimContravariante = new size_t[indiceContravariante];
+        for (size_t i = 0; i < indiceContravariante; ++i)
+            dimContravariante[i] = otroTensor.dimContravariante[i];
+
+        dimCovariante = new size_t[indiceCovariante];
+        for (size_t i = 0; i < indiceCovariante; ++i)
+            dimCovariante[i] = otroTensor.dimCovariante[i];
+
+        datos = new numTipo[componentes];
+        for (size_t i = 0; i < componentes; ++i)
+            datos[i] = otroTensor.datos[i];
+    }
+
+    // Constructor por movimiento
+    Tensor(Tensor&& otroTensor) noexcept
+        : indiceContravariante(otroTensor.indiceContravariante),
+          indiceCovariante(otroTensor.indiceCovariante),
+          rango(otroTensor.rango),
+          componentes(otroTensor.componentes),
+          forma(otroTensor.forma),
+          dimContravariante(otroTensor.dimContravariante),
+          dimCovariante(otroTensor.dimCovariante),
+          datos(otroTensor.datos)
+    {
+        otroTensor.forma = nullptr;
+        otroTensor.dimContravariante = nullptr;
+        otroTensor.dimCovariante = nullptr;
+        otroTensor.datos = nullptr;
+        otroTensor.componentes = 0;
+        otroTensor.rango = 0;
+    }
+
+    // Sobrecarga al operador de asignación para hacer copia o movimiento con swap.
+    Tensor& operator=(Tensor otroTensor) noexcept{
+        swapTensor(*this, otroTensor);
+        return *this;
+    }
+
+    friend Tensor<numTipo> copiarTensorForma(const Tensor<numTipo>& tensor);
 };
 
-template<typename tensorDatos> 
+//Función libre de Swap para luego usarla en la asignación por copia o movimiento 
+template<typename numTipo>
+void swapTensor(Tensor<numTipo>& tensor1, Tensor<numTipo>& tensor2) noexcept {
+    std::swap(tensor1.indiceContravariante, tensor2.indiceContravariante);
+    std::swap(tensor1.indiceCovariante,    tensor2.indiceCovariante);
+    std::swap(tensor1.rango,               tensor2.rango);
+    std::swap(tensor1.componentes,         tensor2.componentes);
+
+    std::swap(tensor1.forma,               tensor2.forma);
+    std::swap(tensor1.dimContravariante,   tensor2.dimContravariante);
+    std::swap(tensor1.dimCovariante,       tensor2.dimCovariante);
+    std::swap(tensor1.datos,               tensor2.datos);
+}
+
+template<typename numTipo> 
 class CitrusTensor{
 private:
-    Tensor<tensorDatos> tensor;
+    Tensor<numTipo> tensor;
 
 public:
     // Constructor
@@ -79,28 +153,30 @@ public:
 
     // Modificar instancia actual de tensor y los datos.
     void setTensor(const size_t* forma, size_t nuevaContravariante, size_t nuevaCovariante);
-    void setTensorCompleto(const Tensor<tensorDatos> tensorNuevo);
-    void setDatos(const tensorDatos* arregloDatos);
-    tensorDatos getDato(const size_t* indices) const;
-    const tensorDatos* getDatos() const;
-    Tensor<tensorDatos> getTensor() const;
+    void setTensorCompleto(const Tensor<numTipo> tensorNuevo);
+    void setDatos(const numTipo* arregloDatos);
+    numTipo getDato(const size_t* indices) const;
+    const numTipo* getDatos() const;
+    Tensor<numTipo> getTensor() const;
 
     // Acceso y modificación por índices múltiples (estilo matemático) => Similar a MATLAB.
     template<typename... Indices>
-    tensorDatos& operator()(Indices... indices);
+    numTipo& operator()(Indices... indices);
 
     template<typename... Indices>
-    const tensorDatos& operator()(Indices... indices) const;
+    const numTipo& operator()(Indices... indices) const;
 
     // Definir operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 
-    void verificarOperabilidad(const Tensor<tensorDatos>& tensor1, const Tensor<tensorDatos>& tensor2) const;
-    Tensor<tensorDatos> sumaTensorial(const Tensor<tensorDatos>& tensor1, const Tensor<tensorDatos>& tensor2) const;
-    Tensor<tensorDatos> restaTensorial(const Tensor<tensorDatos>& tensor1, const Tensor<tensorDatos>& tensor2) const;
-    //Tensor<tensorDatos> productoTensorial(const Tensor<tensorDatos> tensor1,const Tensor<tensorDatos> tensor2) const;
-    Tensor<tensorDatos> prodComponetesTensorial(const Tensor<tensorDatos>& tensor1,const Tensor<tensorDatos>& tensor2) const;
-    void verificarDivisionTensorial (const Tensor<tensorDatos>& tensor) const;
-    Tensor<tensorDatos> divComponentesTensorial(const Tensor<tensorDatos>& tensor1,const Tensor<tensorDatos>& tensor2) const;
-    Tensor<tensorDatos> conjugadoTensor(const Tensor<tensorDatos>& tensor) const;
+    void verificarOperabilidad(const Tensor<numTipo>& tensor1, const Tensor<numTipo>& tensor2) const;
+    void verificarTensorNulo(const Tensor<numTipo>& tensor) const;
+    Tensor<numTipo> sumaTensorial(const Tensor<numTipo>& tensor1, const Tensor<numTipo>& tensor2) const;
+    Tensor<numTipo> restaTensorial(const Tensor<numTipo>& tensor1, const Tensor<numTipo>& tensor2) const;
+    Tensor<numTipo> productoTensorial(const Tensor<numTipo>& tensor1,const Tensor<numTipo>& tensor2) const; //Operador ⊗
+    Tensor<numTipo> prodComponetesTensorial(const Tensor<numTipo>& tensor1,const Tensor<numTipo>& tensor2) const;
+    Tensor<numTipo> prodTensoEscalar(const numTipo& escalar,const Tensor<numTipo>& tensor) const;
+    void verificarDivisionTensorial(const Tensor<numTipo>& tensor) const;
+    Tensor<numTipo> divComponentesTensorial(const Tensor<numTipo>& tensor1,const Tensor<numTipo>& tensor2) const;
+    Tensor<numTipo> conjugadoTensor(const Tensor<numTipo>& tensor) const;
 };
 
 #endif

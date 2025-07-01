@@ -1,6 +1,6 @@
 # Clemática
 
-> Librería C++ header‑only y toolbox MATLAB para cálculo científico, álgebra tensorial y métodos numéricos avanzados.
+> Librería C++ y toolbox MATLAB para cálculo científico, álgebra tensorial y métodos numéricos avanzados.
 
 ---
 
@@ -68,7 +68,6 @@ Clematica/
 
 ```bash
 git clone https://github.com/Unknow-Error/Clematica.git
-# En tu CMakeLists.txt:
 target_include_directories(miProyecto PRIVATE Clematica/include)
 ```
 
