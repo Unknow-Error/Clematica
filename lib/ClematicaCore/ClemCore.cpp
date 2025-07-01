@@ -1,5 +1,12 @@
 #include "ClemCore.hpp"
 
+// Nota sobre problemas de Overflow o precisión de coma flotante:
+// En double (IEEE 754 de 64 bits): Precisión: 15-17 cifras decimales. Mantisa: 53 bits y Exponente: 11 bits
+// En long double (De verdad) : (extensión x87, 80 bits):  Precisión: 18-21 cifras decimales. Mantisa: 64 bits y Exponente: 15 bits
+// Pero en algunos sistemas un long double es double (entornos MSVC o ARM)
+// Otro caso: Numeros muy grandes como factorial(100) desborda un long double o long int. Cuidado con Tetración.
+// Hay definir limites menores y mayores para evitar estos problemas...
+
 ClemCore::ClemCore() {}
 
 void ClemCore::setResultado(long double resultado) { this->resultado = resultado; }
@@ -203,7 +210,7 @@ long double ClemCore::denominadorC(complejo numC) {
 
 void ClemCore::verificarDivisionPorCeroComplejo(complejo numC) {
     // Se verifica si el cuadrado del módulo es menor que un umbral para evitar divisiones por cero
-    if (denominadorC(numC) < 1e-20) // 1e-20 es un umbral pequeño para tolerar errores numéricos de computo por coma flotante.
+    if (denominadorC(numC) < 1e-16) // 1e-16 es un umbral pequeño para tolerar errores numéricos de computo por coma flotante.
         throw std::runtime_error("Error: división por cero complejo.");
 }
 
