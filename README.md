@@ -62,6 +62,7 @@ Clematica/
 ├── CMakeLists.txt           # Script de build / tests  
 ├── Makefile                 # Alternativa de build  
 └── README.md
+```
 
 ## Instalación
 
