@@ -506,5 +506,6 @@ Tensor<numTipo> CitrusTensor<numTipo>::conjugadoTensor(const Tensor<numTipo>& te
     return tensorResultado;
 }
 
+template class CitrusTensor<long int>;
 template class CitrusTensor<long double>;
 template class CitrusTensor<complejo>;

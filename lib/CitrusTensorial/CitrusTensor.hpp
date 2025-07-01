@@ -176,6 +176,9 @@ public:
     Tensor<numTipo> prodTensoEscalar(const numTipo& escalar,const Tensor<numTipo>& tensor) const;
     void verificarDivisionTensorial(const Tensor<numTipo>& tensor) const;
     Tensor<numTipo> divComponentesTensorial(const Tensor<numTipo>& tensor1,const Tensor<numTipo>& tensor2) const;
+
+    // Otras operaciones: conjugado de los elementos, contracción de índices, Cambio de tipo de índice, contracción parcial, Simetrización y antisimetrización
+    // Permutación de índices, Composición de tensores
     Tensor<numTipo> conjugadoTensor(const Tensor<numTipo>& tensor) const;
 };
 
