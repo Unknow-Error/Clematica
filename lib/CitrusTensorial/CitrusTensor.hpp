@@ -35,26 +35,29 @@ T^(i'_1, ...i'_r)_(j'_1,...j'_r) = Productoria de k = 1 a r (dx^(i'k)/dx^(ik) ) 
 #ifndef CITRUSTENSOR_HPP
 #define CITRUSTENSOR_HPP
 
-
-
-
-// Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
-//En el caso de que los índices contravariantes o covariantes tengan diferente dimensiones (multidimensionalidad). Se especifican con arrays similares a forma
 template<typename tensorDatos> //Para sobrecargar el puntero y poder cambiar el tipo de datos.
 struct Tensor {
-    size_t indiceContravariante, indiceCovariante, rango, componentes; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
-    size_t *forma, *dimContravariante, *dimCovariante; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
-    tensorDatos *datos; //Puntero al tipo de datos
+    size_t indiceContravariante = 0, indiceCovariante = 0, rango = 0, componentes = 0; //valor s, valor r, valor r+s y cantidad de componentes del Array multidimensional
+    size_t *forma = nullptr, *dimContravariante = nullptr, *dimCovariante = nullptr; //Puntero de array con tamaño de dimension. Es el arreglo que describe la cantidad de valores que puede tomar cada uno de los índices del tensor.
+    tensorDatos *datos = nullptr; //Puntero al tipo de datos
+
+    friend Tensor<tensorDatos> copiarTensorForma(const Tensor<tensorDatos>& tensor);
+    friend Tensor<tensorDatos> copiarTensor(const Tensor<tensorDatos>& tensor);
+    //friend Tensor operator*<tensorDatos>(const Tensor& tensor1, const Tensor& tensor2); //Esto sería un producto tensorial : Un operador bilineal dando lugar a un nuevo tensor de diferente dimension y covariantes/contravariantes.
+    friend void liberarTensor(Tensor<tensorDatos>& tensor);
 };
 
 template<typename tensorDatos> 
 class CitrusTensor{
-protected:
+private:
     Tensor<tensorDatos> tensor;
+
 public:
     // Constructor
     CitrusTensor();
     CitrusTensor(const size_t* forma_, size_t contravariante_, size_t covariante_); //const => para evitar modificar el estado interno del objeto
+    // Por ejemplo, un tensor (1,2) en R^3 seria 3x3x3 por lo que forma[3] = {3,3,3}; <- Se le pasa este arreglo al constructor.
+    //En el caso de que los índices contravariantes o covariantes tengan diferente dimensiones (multidimensionalidad). Se especifican con arrays similares a forma
 
     // Destructor
     ~CitrusTensor();
@@ -76,10 +79,11 @@ public:
 
     // Modificar instancia actual de tensor y los datos.
     void setTensor(const size_t* forma, size_t nuevaContravariante, size_t nuevaCovariante);
+    void setTensorCompleto(const Tensor<tensorDatos> tensorNuevo);
     void setDatos(const tensorDatos* arregloDatos);
     tensorDatos getDato(const size_t* indices) const;
     const tensorDatos* getDatos() const;
-    Tensor<tensorDatos> getTensor();
+    Tensor<tensorDatos> getTensor() const;
 
     // Acceso y modificación por índices múltiples (estilo matemático) => Similar a MATLAB.
     template<typename... Indices>
@@ -87,8 +91,16 @@ public:
 
     template<typename... Indices>
     const tensorDatos& operator()(Indices... indices) const;
-};
 
-// Definir operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 
+    // Definir operaciones con Tensores : Producto tensorial, suma/resta tensores coherentes, producto/division interelementos de tensores coherentes. 
+    void verificarOperabilidad(const Tensor<tensorDatos>& tensor1, const Tensor<tensorDatos>& tensor2) const;
+    Tensor<tensorDatos> sumaTensorial(const Tensor<tensorDatos>& tensor1, const Tensor<tensorDatos>& tensor2) const;
+    Tensor<tensorDatos> restaTensorial(const Tensor<tensorDatos>& tensor1, const Tensor<tensorDatos>& tensor2) const;
+    //Tensor<tensorDatos> productoTensorial(const Tensor<tensorDatos> tensor1,const Tensor<tensorDatos> tensor2) const;
+    Tensor<tensorDatos> prodComponetesTensorial(const Tensor<tensorDatos>& tensor1,const Tensor<tensorDatos>& tensor2) const;
+    void verificarDivisionTensorial (const Tensor<tensorDatos>& tensor) const;
+    Tensor<tensorDatos> divComponentesTensorial(const Tensor<tensorDatos>& tensor1,const Tensor<tensorDatos>& tensor2) const;
+    Tensor<tensorDatos> conjugadoTensor(const Tensor<tensorDatos>& tensor) const;
+};
 
 #endif

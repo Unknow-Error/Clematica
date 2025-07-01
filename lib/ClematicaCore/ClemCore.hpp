@@ -29,11 +29,7 @@ public:
     void setResultado(long double resultado);
     void setResultadoC(complejo resultadoC);
 
-    long double getNum1();
-    long double getNum2();
     long double getResultado();
-    complejo getNumC1();
-    complejo getNumC2();
     complejo getResultadoC();
 
     long double sumaReal(long double num1, long double num2);

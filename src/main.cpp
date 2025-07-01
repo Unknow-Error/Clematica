@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../lib/ClematicaCore/ClemCore.cpp"
 #include "../lib/ClematicaCore/CitraFunciones.cpp"
-#include "../lib/CitrusTensorial/CitrusTensor.cpp"
+#include "../lib/CitrusTensorial/CitrusTensor.cpp" 
 #include <iomanip> // necesario para setprecision y fixed
 
 int main(int argc, char *argv[])
@@ -75,14 +75,21 @@ int main(int argc, char *argv[])
     size_t indices[2] = {2, 3};
     size_t indice = 0;
 
-    CitrusTensor<complejo> tr(forma, 1, 1); 
+    CitrusTensor<complejo> tc1(forma, 1, 1); 
+    CitrusTensor<complejo> tc3(forma, 1, 1);
     complejo buffer[9] = {c1, c2, c3, c4, c2, c1+c2, c3, c2, c3};
-    tr.setDatos(buffer);
-    indice = tr.getIndiceLineal(indices);
+    tc1.setDatos(buffer);
+    indice = tc1.getIndiceLineal(indices);
 
     std::cout << "El índice para el elemento tensor(2,3) es " << indice << ".\n" << std::endl;
-    std::cout << "El dato en tensor(2,3) es " << (tr.getDato(indices)).real << " + " <<  (tr.getDato(indices)).imaginario <<  "i.\n" << std::endl;
-    tr(1,1) = {5,6};
-    std::cout << "El dato en tensor(1,1) es " << (tr(1,1)).real <<  " + " <<  (tr(1,1)).imaginario << "i.\n" << std::endl;
+    std::cout << "El dato en tensor(2,3) es " << (tc1.getDato(indices)).real << " + " <<  (tc1.getDato(indices)).imaginario <<  "i.\n" << std::endl;
+    tc1(1,1) = {5,6};
+    std::cout << "El dato en tensor(1,1) es " << (tc1(1,1)).real <<  " + " <<  (tc1(1,1)).imaginario << "i.\n" << std::endl;
+    Tensor<complejo> resultado = tc1.sumaTensorial(tc1.getTensor(), tc1.getTensor());
+    tc3.setTensorCompleto(resultado);
+    std::cout << "El dato en tc3(2,3) es " << (tc3(2,3)).real <<  " + " <<  (tc3(2,3)).imaginario << "i.\n" << std::endl;
+    Tensor<complejo> conjugadoTc3 = tc1.conjugadoTensor(tc3.getTensor());
+    tc3.setTensorCompleto(conjugadoTc3);
+    std::cout << "El dato en tc3(2,3) al conjugar es " << (tc3(2,3)).real <<  " + " <<  (tc3(2,3)).imaginario << "i.\n" << std::endl;
     return 0;
 }
