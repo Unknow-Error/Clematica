@@ -506,6 +506,13 @@ Tensor<numTipo> CitrusTensor<numTipo>::conjugadoTensor(const Tensor<numTipo>& te
     return tensorResultado;
 }
 
+
+// Usos y el tipo de datos numéricos de las plantillas:
+
+using TensorDouble = Tensor<long double>;
+using TensorComplejo = Tensor<complejo>;
+using TensorEntero = Tensor<long int>;
+
 template class CitrusTensor<long int>;
 template class CitrusTensor<long double>;
 template class CitrusTensor<complejo>;

@@ -180,6 +180,11 @@ public:
     // Otras operaciones: conjugado de los elementos, contracción de índices, Cambio de tipo de índice, contracción parcial, Simetrización y antisimetrización
     // Permutación de índices, Composición de tensores
     Tensor<numTipo> conjugadoTensor(const Tensor<numTipo>& tensor) const;
+    //Tensor<numTipo> contraccionIndices(const Tensor<numTipo>& tensor) const;
+    //Tensor<numTipo> cambiarIndice(const Tensor<numTipo>& tensor, const Tensor<numTipo>& metrica) const;
+    //Tensor<numTipo> simetrizacion(const Tensor<numTipo>& tensor) const;
+    //Tensor<numTipo> antisimetrizacion(const Tensor<numTipo>& tensor) const;  
+    //Tensor<numTipo> permutarIndices(const Tensor<numTipo>& tensor, const size_t* dimContrvPermutar, const size_t* dimConvPermutar);
 };
 
 #endif
