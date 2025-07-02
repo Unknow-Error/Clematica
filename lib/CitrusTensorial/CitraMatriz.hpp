@@ -14,7 +14,7 @@ struct Matriz {
 template<typename numTipo>
 class CitraMatriz : CitrusTensor<numTipo> {
 private:
-    Matriz<numTipo> matriz;
+    Matriz<numTipo> limon;
 public:
     //Constructores
     CitraMatriz();

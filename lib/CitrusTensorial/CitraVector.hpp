@@ -11,7 +11,7 @@ struct Vector{
 template<typename numTipo>
 class CitraVector : CitrusTensor<numTipo> {
 private:
-    Vector<numTipo> vec;
+    Vector<numTipo> naranja;
 public:
     //Constructores
     CitraVector();
